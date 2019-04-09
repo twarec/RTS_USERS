@@ -9,8 +9,11 @@ public class SelectionView : MonoBehaviour
     private RTS_Camera RTS_Camera;
     [SerializeField]
     private Camera camera;
+    [SerializeField]
+    private Player player;
     private Vector3 Point1, Point2;
     private Vector3 WPoint1;
+
 
     private static Texture2D _whiteTexture;
     public static Texture2D WhiteTexture
@@ -26,6 +29,7 @@ public class SelectionView : MonoBehaviour
             return _whiteTexture;
         }
     }
+
     private static void DrawScreenRect(Rect rect, Color color)
     {
         GUI.color = color;
@@ -57,6 +61,8 @@ public class SelectionView : MonoBehaviour
     private void Awake()
     {
         RTS_Camera = GetComponent<RTS_Camera>();
+        if (player == null)
+            player = FindObjectOfType<Player>();
     }
     private void OnEnable()
     {
@@ -102,16 +108,22 @@ public class SelectionView : MonoBehaviour
             {
                 if (bounds.Contains(camera.WorldToViewportPoint(v.Transform.position)))
                 {
-                    if (!v.IsSelect)
+                    if (v.Tag == player.Tag)
                     {
-                        RTS.SelectebleObjectManager.AddSelectonObject(v);
+                        if (!v.IsSelect)
+                        {
+                            RTS.SelectebleObjectManager.AddSelectonObject(v);
+                        }
                     }
                 }
                 else
                 {
-                    if (v.IsSelect)
+                    if (v.Tag == player.Tag)
                     {
-                        RTS.SelectebleObjectManager.RemoveSelectonObject(v);
+                        if (v.IsSelect)
+                        {
+                            RTS.SelectebleObjectManager.RemoveSelectonObject(v);
+                        }
                     }
                 }
             }

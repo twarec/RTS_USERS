@@ -8,6 +8,9 @@ public class Player : MonoBehaviour {
     private LayerMask NavigationMask;
     [SerializeField]
     private Camera camera;
+
+    public byte Tag;
+
     private void Awake () {
         RTS.SelectebleObjectManager.ActionAddSelectebleObject = v => v.IsSelect = true;
         RTS.SelectebleObjectManager.ActionRemoveSelectebleObject = v => v.IsSelect = false;
