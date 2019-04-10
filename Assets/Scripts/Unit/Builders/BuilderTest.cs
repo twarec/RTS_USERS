@@ -1,15 +1,16 @@
+ï»¿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
 namespace RTS
 {
-    [AddComponentMenu("RTS/SelectebleObject/Test")]
+    [AddComponentMenu("RTS/SelectebleObject/Builder/Test")]
     [RequireComponent(typeof(Outline))]
     [RequireComponent(typeof(NavMeshAgent))]
-    public class TestSelect : MonoBehaviour, ISelectebleObject
+    public class BuilderTest : MonoBehaviour, ISelectebleObject
     {
-
-        #region Ïåðåìåííûå èñïåêòîðà
+        #region ÐŸÐµÑ€ÐµÐ¼ÐµÐ½Ð½Ñ‹Ðµ Ð¸ÑÐ¿ÐµÐºÑ‚Ð¾Ñ€Ð°
         [SerializeField]
         private string _name;
         [SerializeField]
@@ -27,7 +28,7 @@ namespace RTS
         [SerializeField]
         private Vector3 _position;
         #endregion
-        #region Èíòåðôåéñ ISelectebleObject
+        #region Ð˜Ð½Ñ‚ÐµÑ€Ñ„ÐµÐ¹Ñ ISelectebleObject
         public string Name
         {
             get => _name;
@@ -44,9 +45,9 @@ namespace RTS
             set
             {
                 _isSelect = value;
-                if (outline)
+                if (_outline)
                 {
-                    outline.enabled = _isSelect;
+                    _outline.enabled = _isSelect;
                 }
             }
         }
@@ -78,26 +79,27 @@ namespace RTS
             get => _position;
             set => _position = value;
         }
-        public Skils Skils { get => null; }
+        public Skils Skils { get => _skils; }
 
         public void Move(Vector3 pos)
         {
             _navMeshAgent.destination = pos;
         }
-        #endregion
+        #endregion 
 
-
-        private Outline outline;
+        private Outline _outline;
+        private Skils _skils;
 
         private void Awake()
         {
-            outline = GetComponent<Outline>();
+            _outline = GetComponent<Outline>();
             _navMeshAgent = GetComponent<NavMeshAgent>();
             _transform = transform;
+            _skils = GetComponent<Skils>();
         }
         private void Start()
         {
-            outline.enabled = false;
+            _outline.enabled = false;
         }
         private void OnEnable()
         {
@@ -107,6 +109,5 @@ namespace RTS
         {
             SelectebleObjectManager.DiRegistrateSelectionObject(this);
         }
-
     }
 }

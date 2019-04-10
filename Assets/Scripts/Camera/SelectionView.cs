@@ -8,10 +8,10 @@ public class SelectionView : MonoBehaviour
 {
     private RTS_Camera RTS_Camera;
     [SerializeField]
-    private Camera camera;
+    private new Camera camera;
     [SerializeField]
     private Player player;
-    private Vector3 Point1, Point2;
+    private Vector2 Point1, Point2;
     private Vector3 WPoint1;
 
 
@@ -29,6 +29,7 @@ public class SelectionView : MonoBehaviour
             return _whiteTexture;
         }
     }
+    public static Action<List<RTS.ISelectebleObject>> SelectAction;
 
     private static void DrawScreenRect(Rect rect, Color color)
     {
@@ -79,13 +80,16 @@ public class SelectionView : MonoBehaviour
 
     public void MouseDown()
     {
-        isDraw = true;
-        GameEvent.AddEvent(SelectionViewUpdate, Method.Update);
-        RaycastHit hit;
-        if(Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out hit))
+        if (!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
         {
-            WPoint1 = hit.point;
-            Point1 = camera.WorldToScreenPoint(WPoint1);
+            isDraw = true;
+            GameEvent.AddEvent(SelectionViewUpdate, Method.Update);
+            RaycastHit hit;
+            if (Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out hit))
+            {
+                WPoint1 = hit.point;
+                Point1 = camera.WorldToScreenPoint(WPoint1);
+            }
         }
     }
     public void MousePrees()
@@ -93,10 +97,11 @@ public class SelectionView : MonoBehaviour
         Point1 = camera.WorldToScreenPoint(WPoint1);
         Point2 = Input.mousePosition;
     }
-    private void MouseUp()
+    public void MouseUp()
     {
         isDraw = false;
         GameEvent.RemoveEvent(SelectionViewUpdate, Method.Update);
+        SelectAction?.Invoke(RTS.SelectebleObjectManager.GetSelectionObjects());
     }
 
     private void SelectionViewUpdate(float obj)
@@ -130,20 +135,20 @@ public class SelectionView : MonoBehaviour
         }
         else
         {
-            List<RTS.ISelectebleObject> DiSil = new List<RTS.ISelectebleObject>();
-            foreach (var v in RTS.SelectebleObjectManager.GetSelectionObjects())
-                DiSil.Add(v);
-            foreach (var v in DiSil)
-                RTS.SelectebleObjectManager.RemoveSelectonObject(v);
-            RaycastHit hit;
-            if(Physics.Raycast(camera.ScreenPointToRay(Point2),out hit))
-            {
-                RTS.ISelectebleObject selecteble = hit.transform.GetComponent<RTS.ISelectebleObject>();
-                if (selecteble != null)
+                List<RTS.ISelectebleObject> DiSil = new List<RTS.ISelectebleObject>();
+                foreach (var v in RTS.SelectebleObjectManager.GetSelectionObjects())
+                    DiSil.Add(v);
+                foreach (var v in DiSil)
+                    RTS.SelectebleObjectManager.RemoveSelectonObject(v);
+                RaycastHit hit;
+                if (Physics.Raycast(camera.ScreenPointToRay(Point2), out hit))
                 {
-                    RTS.SelectebleObjectManager.AddSelectonObject(selecteble);
+                    RTS.ISelectebleObject selecteble = hit.transform.GetComponent<RTS.ISelectebleObject>();
+                    if (selecteble != null)
+                    {
+                        RTS.SelectebleObjectManager.AddSelectonObject(selecteble);
+                    }
                 }
-            }
         }
     }
 

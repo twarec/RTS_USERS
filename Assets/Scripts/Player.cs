@@ -12,8 +12,8 @@ public class Player : MonoBehaviour {
     public byte Tag;
 
     private void Awake () {
-        RTS.SelectebleObjectManager.ActionAddSelectebleObject = v => v.IsSelect = true;
-        RTS.SelectebleObjectManager.ActionRemoveSelectebleObject = v => v.IsSelect = false;
+        RTS.SelectebleObjectManager.ActionAddSelectebleObject += v => v.IsSelect = true;
+        RTS.SelectebleObjectManager.ActionRemoveSelectebleObject += v => v.IsSelect = false;
         InputEvent.AddInput(1, MouseUp, MouseType.Up);
     }
 
@@ -37,7 +37,7 @@ public class Player : MonoBehaviour {
                     isleft = !isleft;
                     if(isleft)
                         row++;
-                    if (row * 2f >= sqrt)
+                    if (row * 2f > sqrt)
                     {
                         row = 0;
                         isleft = false;

@@ -9,8 +9,9 @@ namespace RTS {
         Transform Transform { get;}
         NavMeshAgent NavMeshAgent { get; }
         void Move(Vector3 pos);
-        Texture2D Icon { get; }
+        Sprite Icon { get; }
         float Health { get; set; }
         Vector3 Position { get; set; }
+        Skils Skils { get; }
     }
 }
