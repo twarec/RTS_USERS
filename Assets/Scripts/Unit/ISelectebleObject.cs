@@ -13,5 +13,8 @@ namespace RTS {
         float Health { get; set; }
         Vector3 Position { get; set; }
         Skils Skils { get; }
+
+
+        
     }
 }

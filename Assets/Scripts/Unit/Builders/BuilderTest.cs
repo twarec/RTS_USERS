@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using YG_EventSystem;
 
 namespace RTS
 {
@@ -27,6 +28,7 @@ namespace RTS
         private float _health;
         [SerializeField]
         private Vector3 _position;
+        private Skils _skils;
         #endregion
         #region Интерфейс ISelectebleObject
         public string Name
@@ -88,14 +90,28 @@ namespace RTS
         #endregion 
 
         private Outline _outline;
-        private Skils _skils;
+        private Material _myMaterial;
+        private SphereCollider _triggerCgildren;
 
         private void Awake()
         {
+            _skils = GetComponent<Skils>();
             _outline = GetComponent<Outline>();
             _navMeshAgent = GetComponent<NavMeshAgent>();
             _transform = transform;
             _skils = GetComponent<Skils>();
+            _myMaterial = GetComponent<MeshRenderer>().material;
+
+            for(int i = 0; i < GameManager.Instatate.Players.Count; i++)
+                if(GameManager.Instatate.Players[i].Tag == Tag)
+                    _myMaterial.SetColor("_Color", GameManager.Instatate.Players[i].ColorPlayer);
+            _triggerCgildren = new GameObject("Trigger").AddComponent<SphereCollider>();
+            _triggerCgildren.isTrigger = true;
+            _triggerCgildren.radius = 10;
+            _triggerCgildren.transform.parent = _transform;
+            _triggerCgildren.transform.localPosition = Vector3.zero;
+            _triggerCgildren.gameObject.layer = LayerMask.NameToLayer("DatactedEnum");
+
         }
         private void Start()
         {

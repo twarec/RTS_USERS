@@ -6,14 +6,12 @@ namespace RTS
 {
     public class Skils : MonoBehaviour
     {
-        void Start()
+        private ISkil[] _skils;
+        public ISkil[] AllSkils { get => _skils; }
+        private void Awake()
         {
-
+            _skils = GetComponents<ISkil>();
         }
 
-        void Update()
-        {
-
-        }
     }
 }

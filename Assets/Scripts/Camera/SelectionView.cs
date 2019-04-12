@@ -6,6 +6,10 @@ using YG_EventSystem;
 
 public class SelectionView : MonoBehaviour
 {
+
+    [SerializeField]
+    private LayerMask _selectLayers;
+
     private RTS_Camera RTS_Camera;
     [SerializeField]
     private new Camera camera;
@@ -30,6 +34,7 @@ public class SelectionView : MonoBehaviour
         }
     }
     public static Action<List<RTS.ISelectebleObject>> SelectAction;
+
 
     private static void DrawScreenRect(Rect rect, Color color)
     {
@@ -135,20 +140,20 @@ public class SelectionView : MonoBehaviour
         }
         else
         {
-                List<RTS.ISelectebleObject> DiSil = new List<RTS.ISelectebleObject>();
-                foreach (var v in RTS.SelectebleObjectManager.GetSelectionObjects())
-                    DiSil.Add(v);
-                foreach (var v in DiSil)
-                    RTS.SelectebleObjectManager.RemoveSelectonObject(v);
-                RaycastHit hit;
-                if (Physics.Raycast(camera.ScreenPointToRay(Point2), out hit))
+            List<RTS.ISelectebleObject> DiSil = new List<RTS.ISelectebleObject>();
+            foreach (var v in RTS.SelectebleObjectManager.GetSelectionObjects())
+                DiSil.Add(v);
+            foreach (var v in DiSil)
+                RTS.SelectebleObjectManager.RemoveSelectonObject(v);
+            RaycastHit hit;
+            if (Physics.Raycast(camera.ScreenPointToRay(Point2), out hit, 1000, _selectLayers))
+            {
+                RTS.ISelectebleObject selecteble = hit.transform.GetComponent<RTS.ISelectebleObject>();
+                if (selecteble != null)
                 {
-                    RTS.ISelectebleObject selecteble = hit.transform.GetComponent<RTS.ISelectebleObject>();
-                    if (selecteble != null)
-                    {
-                        RTS.SelectebleObjectManager.AddSelectonObject(selecteble);
-                    }
+                    RTS.SelectebleObjectManager.AddSelectonObject(selecteble);
                 }
+            }
         }
     }
 

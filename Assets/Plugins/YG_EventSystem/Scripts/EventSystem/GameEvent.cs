@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Profiling;
+using System.Diagnostics;
 
 namespace YG_EventSystem {
     [AddComponentMenu ("YG_EventSystem/GameEvent")]
@@ -22,59 +19,49 @@ namespace YG_EventSystem {
         public Action<float> updateEvent;
         public Action<float> fixedUpdateEvent;
         public Action<float> lateUpdateEvent;
-        private Dictionary<int, TaskStruct> TaskDictionary = new Dictionary<int, TaskStruct> ();
-        private Task task;
+
+        public float UpdateTime = 0;
+        public float FixedUpdateTime = 0;
+        public float LateUpdateTime = 0;
 
         private float t;
-        private bool TaskStop = false;
-        private void Awake () {
-            //task = Task.Run (TaskWhile);
-        }
         private void Update () {
-            Profiler.BeginSample ("Game event UPDATE");
+#if UNITY_EDITOR
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            t = Time.deltaTime;
+            updateEvent?.Invoke(t);
+            sw.Stop();
+            UpdateTime = sw.ElapsedTicks;
+#else
             t = Time.deltaTime;
             updateEvent?.Invoke (t);
-            Profiler.EndSample ();
-        }
-        private void TaskWhile () {
-            TaskStruct ts;
-            while (true) {
-                if (TaskStop)
-                    break;
-                int count = TaskDictionary.Count;
-                if (count != 0) {
-                    for (int i = 0; i < count; i++) {
-                        ts = TaskDictionary.ElementAt (i).Value;
-                        if (!ts.Dicrimet ()) {
-                            TaskDictionary.Remove (TaskDictionary.ElementAt (i).Key);
-                            count--;
-                            i--;
-                            if (ts.IsMain) {
-                                Action<float> updateAction = null;
-                                updateAction = t => {
-                                    ts.GetUpdateAction?.Invoke (t);
-                                    RemoveEvent (updateAction, Method.Update);
-                                };
-                                AddEvent (updateAction, Method.Update);
-                            }
-                        }
-                    }
-                    TaskDictionary.AsParallel ().ForAll (v => v.Value.Action?.Invoke ());
-                }
-            }
-        }
-        public static void AddTaskEvent (int key, Action action, int loop, Action<float> updateAction) {
-            Obj.TaskDictionary.Add (key, new TaskStruct (action, loop, updateAction));
+#endif
         }
         private void FixedUpdate () {
-            Profiler.BeginSample ("Game event FixedUpdate");
+#if UNITY_EDITOR
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            t = Time.deltaTime;
+            fixedUpdateEvent?.Invoke(t);
+            sw.Stop();
+            FixedUpdateTime = sw.ElapsedTicks;
+#else
             fixedUpdateEvent?.Invoke (t);
-            Profiler.EndSample ();
+#endif
         }
         private void LateUpdate () {
-            Profiler.BeginSample ("Game event LateUpdate");
+#if UNITY_EDITOR
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            t = Time.deltaTime;
+            lateUpdateEvent?.Invoke(t);
+            sw.Stop();
+            LateUpdateTime = sw.ElapsedTicks;
+#else
             lateUpdateEvent?.Invoke (t);
-            Profiler.EndSample ();
+#endif
+
         }
         public static void AddEvent (Action<float> action, Method method) {
             switch (method) {
@@ -88,6 +75,15 @@ namespace YG_EventSystem {
                     Obj.fixedUpdateEvent += action;
                     break;
             }
+        }
+        public static void AddEvent (EventData eventData)
+        {
+            AddEvent(eventData.action, eventData.method);
+        }
+        public static void AddEvent(params EventData[] eventData)
+        {
+            foreach (var v in eventData)
+                AddEvent(v);
         }
         public static void RemoveEvent (Action<float> action, Method method) {
             if (obj) {
@@ -104,8 +100,19 @@ namespace YG_EventSystem {
                 }
             }
         }
-        private void OnDestroy () {
-            TaskStop = true;
+        public static void RemoveEvent(EventData eventData)
+        {
+            RemoveEvent(eventData.action, eventData.method);
+        }
+        public static void RemoveEvent(params EventData[] eventData)
+        {
+            foreach (var v in eventData)
+                RemoveEvent(v);
+        }
+
+        internal static void AddEvent(Action lateUpdate1, Method lateUpdate2)
+        {
+            throw new NotImplementedException();
         }
     }
 }

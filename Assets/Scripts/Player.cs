@@ -9,6 +9,11 @@ public class Player : MonoBehaviour {
     [SerializeField]
     private Camera camera;
 
+    [SerializeField]
+    private bool isActive = false;
+
+    public Color ColorPlayer;
+
     public byte Tag;
 
     private void Awake () {
@@ -19,33 +24,36 @@ public class Player : MonoBehaviour {
 
     private void MouseUp()
     {
-        RaycastHit hit;
-        if(Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out hit, NavigationMask))
+        if (isActive)
         {
-            Vector3 point = hit.point;
-            var coll = RTS.SelectebleObjectManager.GetSelectionObjects();
-            int sqrt = (int)Mathf.Sqrt(coll.Count);
-            float row = 0, col = 0;
-            bool isleft = false;
-
-            
-            foreach (var v in RTS.SelectebleObjectManager.GetAllSelctioObjects())
+            RaycastHit hit;
+            if (Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out hit, 200, NavigationMask))
             {
-                if (v.IsSelect)
+                Vector3 point = hit.point;
+                var coll = RTS.SelectebleObjectManager.GetSelectionObjects();
+                int sqrt = (int)Mathf.Sqrt(coll.Count);
+                float row = 0, col = 0;
+                bool isleft = false;
+
+
+                foreach (var v in RTS.SelectebleObjectManager.GetAllSelctioObjects())
                 {
-                    v.Move(point - (Vector3.forward * col + Vector3.right * (isleft ? -row : row)) * 2f);
-                    isleft = !isleft;
-                    if(isleft)
-                        row++;
-                    if (row * 2f > sqrt)
+                    if (v.IsSelect)
                     {
-                        row = 0;
-                        isleft = false;
-                        col++;
+                        v.Move(point - (Vector3.forward * col + Vector3.right * (isleft ? -row : row)) * 1f);
+                        isleft = !isleft;
+                        if (isleft)
+                            row++;
+                        if (row * 2f > sqrt)
+                        {
+                            row = 0;
+                            isleft = false;
+                            col++;
+                        }
                     }
                 }
-            }
 
+            }
         }
     }
 }

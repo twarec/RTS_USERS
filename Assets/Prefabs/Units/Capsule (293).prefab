@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 466574679182816165}
   - component: {fileID: 466574679182816164}
   - component: {fileID: 466574679182816174}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Capsule (293)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -130,6 +130,9 @@ MonoBehaviour:
   _isSelect: 0
   _transform: {fileID: 0}
   _navMeshAgent: {fileID: 0}
+  _icon: {fileID: 0}
+  _health: 0
+  _position: {x: 0, y: 0, z: 0}
 --- !u!195 &466574679182816174
 NavMeshAgent:
   m_ObjectHideFlags: 0

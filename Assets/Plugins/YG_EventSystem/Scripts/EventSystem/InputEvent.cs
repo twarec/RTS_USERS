@@ -22,6 +22,9 @@ namespace YG_EventSystem {
         private Dictionary<int, Action> inputsMouseUp = new Dictionary<int, Action> ();
         private Dictionary<int, Action> inputsMousePress = new Dictionary<int, Action> ();
 
+
+        private Action LateUpdate;
+
         private void TOnUpdate (float obj) {
             foreach (var v in inputs) {
                 float value = Input.GetAxis (v.Key);
@@ -105,34 +108,48 @@ namespace YG_EventSystem {
         public static void RemoveInput (int index, Action action, MouseType type) {
             switch (type) {
                 case MouseType.Down:
-                    if (obj && obj.inputsMouseDown.ContainsKey (index)) {
-                        obj.inputsMouseDown[index] -= action;
-                        if (obj.inputsMouseDown[index] == null) {
-                            obj.inputsMouseDown.Remove (index);
-                            if (obj.inputsMouseDown.Count == 0)
-                                GameEvent.RemoveEvent (obj.TOnUpdate_MouseDown, Method.Update);
+                    obj.LateUpdate += () =>
+                    {
+                        if (obj && obj.inputsMouseDown.ContainsKey(index))
+                        {
+                            obj.inputsMouseDown[index] -= action;
+                            if (obj.inputsMouseDown[index] == null)
+                            {
+                                obj.inputsMouseDown.Remove(index);
+                                if (obj.inputsMouseDown.Count == 0)
+                                    GameEvent.RemoveEvent(obj.TOnUpdate_MouseDown, Method.Update);
+                            }
                         }
-                    }
+                    };
                     break;
                 case MouseType.Press:
-                    if (obj && obj.inputsMousePress.ContainsKey (index)) {
-                        obj.inputsMousePress[index] -= action;
-                        if (obj.inputsMousePress[index] == null) {
-                            obj.inputsMousePress.Remove (index);
-                            if (obj.inputsMousePress.Count == 0)
-                                GameEvent.RemoveEvent (obj.TOnUpdate_MousePress, Method.Update);
+                    obj.LateUpdate += () =>
+                    {
+                        if (obj && obj.inputsMousePress.ContainsKey(index))
+                        {
+                            obj.inputsMousePress[index] -= action;
+                            if (obj.inputsMousePress[index] == null)
+                            {
+                                obj.inputsMousePress.Remove(index);
+                                if (obj.inputsMousePress.Count == 0)
+                                    GameEvent.RemoveEvent(obj.TOnUpdate_MousePress, Method.Update);
+                            }
                         }
-                    }
+                    };
                     break;
                 case MouseType.Up:
-                    if (obj && obj.inputsMouseUp.ContainsKey (index)) {
-                        obj.inputsMouseUp[index] -= action;
-                        if (obj.inputsMouseUp[index] == null) {
-                            obj.inputsMouseUp.Remove (index);
-                            if (obj.inputsMouseUp.Count == 0)
-                                GameEvent.RemoveEvent (obj.TOnUpdate_MouseUp, Method.Update);
+                    obj.LateUpdate += () => {
+                        if (obj && obj.inputsMouseUp.ContainsKey(index))
+                        {
+                            obj.inputsMouseUp[index] -= action;
+                            if (obj.inputsMouseUp[index] == null)
+                            {
+                                obj.inputsMouseUp.Remove(index);
+                                if (obj.inputsMouseUp.Count == 0)
+                                    GameEvent.RemoveEvent(obj.TOnUpdate_MouseUp, Method.Update);
+                            }
                         }
-                    }
+                    };
                     break;
             }
         }
@@ -152,6 +169,8 @@ namespace YG_EventSystem {
                 GameEvent.AddEvent (TOnUpdate_MousePress, Method.Update);
             if (inputsMouseUp.Count != 0)
                 GameEvent.AddEvent (TOnUpdate_MouseUp, Method.Update);
+
+            GameEvent.AddEvent(LateUpdateMethod, Method.LateUpdate);
         }
         private void OnDisable () {
             if (inputs.Count != 0)
@@ -162,6 +181,18 @@ namespace YG_EventSystem {
                 GameEvent.RemoveEvent (TOnUpdate_MousePress, Method.Update);
             if (inputsMouseUp.Count != 0)
                 GameEvent.RemoveEvent (TOnUpdate_MouseUp, Method.Update);
+
+            GameEvent.RemoveEvent(LateUpdateMethod, Method.LateUpdate);
+
+        }
+
+        private void LateUpdateMethod(float obj)
+        {
+            if (LateUpdate != null)
+            {
+                LateUpdate();
+                LateUpdate = null;
+            }
         }
     }
 
