@@ -5,18 +5,27 @@ using UnityEngine;
 public class SkilsPanel : MonoBehaviour
 {
     [SerializeField]
-    private SelectPanelEllement[] SelectElllements = new SelectPanelEllement[0];
+    private SkilsPanaleEllement[] SelectElllements = new SkilsPanaleEllement[0];
 
     private void Awake()
     {
-        SelectElllements = GetComponentsInChildren<SelectPanelEllement>();
+        SelectElllements = GetComponentsInChildren<SkilsPanaleEllement>();
     }
 
-    private void LoadSkilsFromUnit(RTS.ISelectebleObject selecteble)
+    public void LoadSkilsFromUnit(RTS.ISelectebleObject selecteble)
     {
-        foreach(var v in selecteble.Skils.AllSkils)
+        for (int i = 0; i < SelectElllements.Length; i++)
         {
-
+            if (i < selecteble.Skils.AllSkils.Length)
+            {
+                SelectElllements[i].Icon = selecteble.Skils.AllSkils[i].Icon;
+                SelectElllements[i].Action = selecteble.Skils.AllSkils[i].Active;
+                SelectElllements[i].gameObject.SetActive(true);
+            }
+            else
+            {
+                SelectElllements[i].gameObject.SetActive(false);
+            }
         }
     }
 }

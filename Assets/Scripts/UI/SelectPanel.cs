@@ -11,7 +11,7 @@ public class SelectPanel : MonoBehaviour
 
 
     [SerializeField]
-    private GameObject _skilsPanel;
+    private SkilsPanel _skilsPanel;
 
     private int _count;
 
@@ -35,17 +35,21 @@ public class SelectPanel : MonoBehaviour
                 break;
             }
         }
-        if (_count != 1 && !gameObject.activeSelf)
+        if (_count != 1)
         {
-            gameObject.SetActive(true);
-            _skilsPanel.SetActive(false);
+            if (!gameObject.activeSelf)
+            {
+                gameObject.SetActive(true);
+                _skilsPanel.gameObject.SetActive(false);
+            }
         }
         else
         {
             if (RTS.SelectebleObjectManager.GetSelectionObjects().Count > 0 && RTS.SelectebleObjectManager.GetSelectionObjects()[0].Skils != null)
             {
                 gameObject.SetActive(false);
-                _skilsPanel.SetActive(true);
+                _skilsPanel.gameObject.SetActive(true);
+                _skilsPanel.LoadSkilsFromUnit(RTS.SelectebleObjectManager.GetSelectionObjects()[0]);
             }
         }
     }
@@ -60,17 +64,22 @@ public class SelectPanel : MonoBehaviour
                 break;
             }
         }
-        if(_count != 1 && !gameObject.activeSelf)
+        if(_count != 1)
         {
-            gameObject.SetActive(true);
-            _skilsPanel.SetActive(false);
+            if (!gameObject.activeSelf)
+            {
+                gameObject.SetActive(true);
+                _skilsPanel.gameObject.SetActive(false);
+            }
         }
         else
         {
             if (RTS.SelectebleObjectManager.GetSelectionObjects()[0].Skils != null)
             {
                 gameObject.SetActive(false);
-                _skilsPanel.SetActive(true);
+                _skilsPanel.gameObject.SetActive(true);
+                _skilsPanel.LoadSkilsFromUnit(RTS.SelectebleObjectManager.GetSelectionObjects()[0]);
+
             }
         }
     }

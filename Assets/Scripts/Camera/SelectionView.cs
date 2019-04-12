@@ -85,15 +85,18 @@ public class SelectionView : MonoBehaviour
 
     public void MouseDown()
     {
-        if (!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+        if (!GameManager.Instatate.IsBuild)
         {
-            isDraw = true;
-            GameEvent.AddEvent(SelectionViewUpdate, Method.Update);
-            RaycastHit hit;
-            if (Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out hit))
+            if (!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
             {
-                WPoint1 = hit.point;
-                Point1 = camera.WorldToScreenPoint(WPoint1);
+                isDraw = true;
+                GameEvent.AddEvent(SelectionViewUpdate, Method.Update);
+                RaycastHit hit;
+                if (Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out hit))
+                {
+                    WPoint1 = hit.point;
+                    Point1 = camera.WorldToScreenPoint(WPoint1);
+                }
             }
         }
     }

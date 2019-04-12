@@ -7,7 +7,10 @@ namespace YG_EventSystem
 {
     public class BuidSkil : YGES_Standart, ISkil
     {
-        public Sprite Icon { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        [SerializeField]
+        private Sprite _icon;
+
+        public Sprite Icon { get => _icon; set => _icon = value; }
         public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         private EventData eventData;
@@ -17,11 +20,17 @@ namespace YG_EventSystem
         [SerializeField]
         private Transform _priBuild;
 
-        private Transform _buildActive;
+        [SerializeField]
+        private float _offsetY;
 
+
+
+        private Transform _buildActive;
+        private RTS.ISelectebleObject _selecteble;
 
         protected override void Init()
         {
+            _selecteble = GetComponent<RTS.ISelectebleObject>();
             eventData = new EventData(UpdateBuild, Method.Update);
         }
 
@@ -30,22 +39,36 @@ namespace YG_EventSystem
             RaycastHit hit;
             if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100, 1 << 9, QueryTriggerInteraction.Ignore))
             {
-                _buildActive.position = hit.point;
+                _buildActive.position = new Vector3(hit.point.x - hit.point.x % .5f, hit.point.y, hit.point.z - hit.point.z % .5f) + Vector3.up * _offsetY;
             }
         }
 
         public void Active() {
             _buildActive = Instantiate(_priBuild);
             GameEvent.AddEvent(eventData);
-            InputEvent.AddInput(0, Build, MouseType.Up);
+            InputEvent.AddInput(0, Build, MouseType.Down);
+            InputEvent.AddInput(1, End, MouseType.Down);
+            Cursor.visible = false;
+            GameManager.Instatate.IsBuild = true;
+        }
+
+        private void End()
+        {
+            Destroy(_buildActive.gameObject);
+            GameEvent.RemoveEvent(eventData);
+            InputEvent.RemoveInput(0, Build, MouseType.Down);
+            InputEvent.RemoveInput(1, End, MouseType.Down);
+            Cursor.visible = true;
+            GameManager.Instatate.IsBuild = false;
         }
 
         private void Build()
         {
             Instantiate(_build, _buildActive.position, Quaternion.identity);
-            Destroy(_buildActive.gameObject);
-            GameEvent.RemoveEvent(eventData);
-            InputEvent.RemoveInput(0, Build, MouseType.Up);
+            if (!Input.GetKey(KeyCode.LeftShift))
+            {
+                End();
+            }
         }
     }
 }

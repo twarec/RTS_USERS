@@ -25,6 +25,9 @@ namespace YG_EventSystem
             }
         }
         public List<Player> Players { get => _players; }
+
+
+        public bool IsBuild;
         protected override void Init()
         {
             if (!_instatate)
