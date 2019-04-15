@@ -9,4 +9,6 @@ public interface ISkil
 
     Sprite Icon { get; set; }
     string Name { get; set; }
+
+    System.Action EndAction { get; set; }
 }

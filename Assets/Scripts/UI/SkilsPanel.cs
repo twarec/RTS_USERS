@@ -20,6 +20,8 @@ public class SkilsPanel : MonoBehaviour
             {
                 SelectElllements[i].Icon = selecteble.Skils.AllSkils[i].Icon;
                 SelectElllements[i].Action = selecteble.Skils.AllSkils[i].Active;
+                SelectElllements[i].Action += DiactiveAll;
+                selecteble.Skils.AllSkils[i].EndAction = ActiveAll;
                 SelectElllements[i].gameObject.SetActive(true);
             }
             else
@@ -28,4 +30,16 @@ public class SkilsPanel : MonoBehaviour
             }
         }
     }
+
+    private void DiactiveAll()
+    {
+        foreach (var v in SelectElllements)
+            v.IsEnable = false;
+    }
+    private void ActiveAll()
+    {
+        foreach (var v in SelectElllements)
+            v.IsEnable = true;
+    }
+    
 }

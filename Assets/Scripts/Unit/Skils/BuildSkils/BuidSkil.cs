@@ -5,13 +5,16 @@ using UnityEngine;
 
 namespace YG_EventSystem
 {
-    public class BuidSkil : YGES_Standart, ISkil
+    public class BuidSkil : YGES_Standart, ISkil 
     {
         [SerializeField]
         private Sprite _icon;
 
+        private Action _endAction;
+
         public Sprite Icon { get => _icon; set => _icon = value; }
         public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Action EndAction { get => _endAction; set => _endAction = value; }
 
         private EventData eventData;
 
@@ -46,28 +49,35 @@ namespace YG_EventSystem
         public void Active() {
             _buildActive = Instantiate(_priBuild);
             GameEvent.AddEvent(eventData);
-            InputEvent.AddInput(0, Build, MouseType.Down);
-            InputEvent.AddInput(1, End, MouseType.Down);
+            InputEvent.AddInput(0, Build, MouseType.Up);
+            InputEvent.AddInput(1, End, MouseType.Up);
             Cursor.visible = false;
             GameManager.Instatate.IsBuild = true;
         }
 
         private void End()
         {
-            Destroy(_buildActive.gameObject);
-            GameEvent.RemoveEvent(eventData);
-            InputEvent.RemoveInput(0, Build, MouseType.Down);
-            InputEvent.RemoveInput(1, End, MouseType.Down);
-            Cursor.visible = true;
-            GameManager.Instatate.IsBuild = false;
+            if (!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+            {
+                Destroy(_buildActive.gameObject);
+                GameEvent.RemoveEvent(eventData);
+                InputEvent.RemoveInput(0, Build, MouseType.Up);
+                InputEvent.RemoveInput(1, End, MouseType.Up);
+                Cursor.visible = true;
+                GameManager.Instatate.IsBuild = false;
+                _endAction?.Invoke();
+            }
         }
 
         private void Build()
         {
-            Instantiate(_build, _buildActive.position, Quaternion.identity);
-            if (!Input.GetKey(KeyCode.LeftShift))
+            if (!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
             {
-                End();
+                Instantiate(_build, _buildActive.position, Quaternion.identity);
+                if (!Input.GetKey(KeyCode.LeftShift))
+                {
+                    End();
+                }
             }
         }
     }

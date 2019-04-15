@@ -68,24 +68,32 @@ public class RTS_Camera : MonoBehaviour {
     }
 
     private void MouseYMove (float axis) {
-        if (MouseRightPress) {
-            Vector3 rotate = cameraTransform.localEulerAngles;
-            rotate.x = Mathf.Clamp (rotate.x + (VericalInver ? -axis : axis) * SpeedRotate, MinXRotate, MaxXRotate);
-            cameraTransform.localEulerAngles = rotate;
-        }
-        if (ScrollPrees)
+        if (!GameManager.Instatate.IsBuild)
         {
-            VerticalMove(myTransform.position.y / MaxYPosition * axis * -Speed);
+            if (MouseRightPress)
+            {
+                Vector3 rotate = cameraTransform.localEulerAngles;
+                rotate.x = Mathf.Clamp(rotate.x + (VericalInver ? -axis : axis) * SpeedRotate, MinXRotate, MaxXRotate);
+                cameraTransform.localEulerAngles = rotate;
+            }
+            if (ScrollPrees)
+            {
+                VerticalMove(myTransform.position.y / MaxYPosition * axis * -Speed);
+            }
         }
     }
 
     private void MouseXMove (float axis) {
-        if (MouseRightPress) {
-            myTransform.Rotate (new Vector3 (0, axis, 0) * SpeedRotate, Space.World);
-        }
-        if (ScrollPrees)
+        if (!GameManager.Instatate.IsBuild)
         {
-            HorizontalMove(myTransform.position.y / MaxYPosition * axis * -Speed);
+            if (MouseRightPress)
+            {
+                myTransform.Rotate(new Vector3(0, axis, 0) * SpeedRotate, Space.World);
+            }
+            if (ScrollPrees)
+            {
+                HorizontalMove(myTransform.position.y / MaxYPosition * axis * -Speed);
+            }
         }
     }
 

@@ -24,7 +24,7 @@ public class Player : MonoBehaviour {
 
     private void MouseUp()
     {
-        if (isActive)
+        if (isActive && !GameManager.Instatate.IsBuild)
         {
             RaycastHit hit;
             if (Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out hit, 200, NavigationMask))
